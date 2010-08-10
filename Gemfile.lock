@@ -1,0 +1,49 @@
+--- 
+dependencies: 
+  rails: 
+    group: 
+    - :default
+    version: ">= 2.3.8"
+  SystemTimer: 
+    group: 
+    - :default
+    version: ">= 0"
+  resque: 
+    group: 
+    - :default
+    version: ">= 0"
+specs: 
+- rake: 
+    version: 0.8.7
+- SystemTimer: 
+    version: "1.2"
+- activesupport: 
+    version: 2.3.8
+- rack: 
+    version: 1.1.0
+- actionpack: 
+    version: 2.3.8
+- actionmailer: 
+    version: 2.3.8
+- activerecord: 
+    version: 2.3.8
+- activeresource: 
+    version: 2.3.8
+- json_pure: 
+    version: 1.4.6
+- rails: 
+    version: 2.3.8
+- redis: 
+    version: 2.0.5
+- redis-namespace: 
+    version: 0.8.0
+- sinatra: 
+    version: "1.0"
+- vegas: 
+    version: 0.1.7
+- resque: 
+    version: 1.9.10
+hash: aa49d2c446ee50d3c2503af85854323e8873e6a5
+sources: 
+- Rubygems: 
+    uri: http://rubygems.org
