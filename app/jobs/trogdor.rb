@@ -1,7 +1,7 @@
 class Trogdor
-  @queue = :countryside
+  @queue = :terrorize
   
-  def perform(target)
+  def self.perform(target)
     puts "Burninating the #{target}!"
   end
 end
