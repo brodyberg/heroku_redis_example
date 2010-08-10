@@ -126,8 +126,16 @@ Here we tell Rails how to handle a certain web request in order to invoke the `b
 
 ## Test the application
 
+Verify Resque-web works:
+
 * Open [http://young-sunrise-78.heroku.com/resque](http://young-sunrise-78.heroku.com/resque) (any username, password 'secret')
+
+Verify the application works: 
+
 * Open [http://young-sunrise-78.heroku.com/trogdor/burninate/countryside](http://young-sunrise-78.heroku.com/trogdor/burninate/countryside)
+
+Kickoff the worker using [Heroku rake command](http://docs.heroku.com/rake) syntax:
+
 * Start Resque worker: `heroku rake resque:work --app young-sunrise-78 --trace`
 
 ## Observe for Maximum Win
@@ -143,4 +151,4 @@ Here we tell Rails how to handle a certain web request in order to invoke the `b
       ** Execute resque:setup
       ** Execute resque:work
       Burninating the countryside!
-
+      
