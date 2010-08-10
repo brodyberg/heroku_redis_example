@@ -26,7 +26,7 @@ The main difference is that this application runs on Rails 2.3x rather than Rail
 
 * `bundle install`
 * `bundle lock`
-* Add a preinitializer file to work around Bundler issues: (From: http://stackoverflow.com/questions/2170697/bundler-isnt-loading-gems)
+* Add a preinitializer file to work around Bundler issues: (From: [http://stackoverflow.com/questions/2170697/bundler-isnt-loading-gems](http://stackoverflow.com/questions/2170697/bundler-isnt-loading-gems))
 
       begin
         # Require the preresolved locked set of gems.
@@ -92,7 +92,8 @@ The main difference is that this application runs on Rails 2.3x rather than Rail
 
 ## Create Controller which will initiate Resque worker
 
-* Create a controller that will respond to http requests and create our background job
+In this step we write the code that will be initiated by a web request and itself initiate a worker. 
+
 * `RAILS_ROOT/script/generate controller trogdor`
 * Create this method in the controller:
 
@@ -102,6 +103,8 @@ The main difference is that this application runs on Rails 2.3x rather than Rail
       end
 
 ## Configure the route to our controller
+
+Here we tell Rails how to handle a certain web request in order to invoke the `burninate` method in `TrogdorController`
 
 * Set `RAILS_ROOT/config/routes.rb` to: 
 
@@ -123,8 +126,8 @@ The main difference is that this application runs on Rails 2.3x rather than Rail
 
 ## Test the application
 
-* Open http://young-sunrise-78.heroku.com/resque (any username, password 'secret')
-* Open http://young-sunrise-78.heroku.com/trogdor/burninate/countryside
+* Open [http://young-sunrise-78.heroku.com/resque](http://young-sunrise-78.heroku.com/resque) (any username, password 'secret')
+* Open [http://young-sunrise-78.heroku.com/trogdor/burninate/countryside](http://young-sunrise-78.heroku.com/trogdor/burninate/countryside)
 * Start Resque worker: `heroku rake resque:work --app young-sunrise-78 --trace`
 
 ## Observe for Maximum Win
