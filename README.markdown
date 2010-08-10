@@ -1,8 +1,8 @@
 # Redis and Resque on Heroku
 
-Adapted from http://blog.redistogo.com/2010/07/26/resque-with-redis-to-go/ and http://github.com/defunkt/resque
+Adapted from [Resque with Redis To Go by James R. Bracy](http://blog.redistogo.com/2010/07/26/resque-with-redis-to-go/) and [Defunkt's Resque](http://github.com/defunkt/resque)
 
-The main difference is that this application runs on Rails 2.3x rather than Rails 3 and this application has no database dependency. 
+The main difference is that this application runs on Rails 2.3x rather than Rails 3 and this application has no database dependency. Mr. Bracy has [a Rails 3.x version of this example](http://github.com/waratuman/cookie-monster).
 
 ## Create the basic Rails application
 
