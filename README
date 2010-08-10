@@ -13,3 +13,53 @@ gem 'SystemTimer'
 - bundle install
 - bundle lock
 - git add Gemfile Gemfile.lock
+
+- create RAILS_ROOT/config/resque.rb and add: 
+
+ENV["REDISTOGO_URL"] ||= "redis://username:password@host:1234/"
+
+uri = URI.parse(ENV["REDISTOGO_URL"])
+Resque.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+
+- Create a job
+
+class Trogdor
+  @queue = :countryside
+  
+  def perform(target)
+    puts "Burninating the #{target}!"
+  end
+end
+
+- add a preinitializer file to work around Bundler issues: 
+
+# From: http://stackoverflow.com/questions/2170697/bundler-isnt-loading-gems
+
+begin
+  # Require the preresolved locked set of gems.
+  require File.expand_path('../.bundle/environment', __FILE__)
+rescue LoadError
+  # Fallback on doing the resolve at runtime.
+  require "rubygems"
+  require "bundler"
+
+  Bundler.setup
+end
+
+# Auto-require all bundled libraries.
+Bundler.require
+
+- create a controller that will respond to http requests and create our background job
+- RAILS_ROOT/script/generate controller trogdor
+
+Set RAILS_ROOT/config/routes.rb to: 
+
+ActionController::Routing::Routes.draw do |map|
+  map.trogdor 'trogdor/burninate/:target', :controller => 'trogdor', :action => 'burninate'
+end
+
+- uncomment this line from environment.rb
+
+  config.frameworks -= [ :active_record, :active_resource, :action_mailer ]
+
+- delete RAILS_ROOT/config/database.yml

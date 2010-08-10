@@ -43,7 +43,7 @@ specs:
     version: 0.1.7
 - resque: 
     version: 1.9.10
-hash: aa49d2c446ee50d3c2503af85854323e8873e6a5
+hash: c01a50aa489b32ba64a1cbef9cb8d0a0bdf2de97
 sources: 
 - Rubygems: 
     uri: http://rubygems.org
