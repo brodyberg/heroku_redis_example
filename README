@@ -63,3 +63,42 @@ end
   config.frameworks -= [ :active_record, :active_resource, :action_mailer ]
 
 - delete RAILS_ROOT/config/database.yml
+
+- update TrogdorController: 
+
+  def burninate
+    Resque.enqueue(Trogdor, params[:target])
+    render :text => "Telling Trogdor to burninate #{params[:target]}."
+  end
+
+- create RAILS_ROOT/config.ru
+
+# A mix of the config.ru at Defunkt's Resque and the original help
+# file mentioned above
+
+require "config/environment"
+require 'resque/server'
+require 'logger'
+
+use Rails::Rack::LogTailer
+use Rails::Rack::Static
+use Rack::ShowExceptions
+
+# Set the AUTH env variable to your basic auth password to protect Resque.
+AUTH_PASSWORD = 'secret'
+if AUTH_PASSWORD
+  Resque::Server.use Rack::Auth::Basic do |username, password|
+    password == AUTH_PASSWORD
+  end
+end
+
+run Rack::URLMap.new \
+  "/"       => ActionController::Dispatcher.new,
+  "/resque" => Resque::Server.new
+  
+- heroku create
+- heroku addons:add redistogo
+- git push heroku master
+- heroku rake resque:work --app young-sunrise-78 --trace
+- open up http://young-sunrise-78.heroku.com/resque
+- open up http://young-sunrise-78.heroku.com/trogdor/burninate/countryside
