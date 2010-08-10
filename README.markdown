@@ -2,8 +2,20 @@
 
 Adapted from http://blog.redistogo.com/2010/07/26/resque-with-redis-to-go/ and http://github.com/defunkt/resque
 
+The main difference is that this application runs on Rails 2.3x rather than Rails 3 and this application has no database dependency. 
+
+## Create the basic Rails application
+
 * New Rails app: `rails heroku_redis_example`
 * `cd heroku_redis_example`
+
+## Remove the database dependency
+
+* Uncomment this line from `environment.rb`: `config.frameworks -= [ :active_record, :active_resource, :action_mailer ]`
+* `rm RAILS_ROOT/config/database.yml`
+
+## Configure Gems with Bundler
+
 * Create and add this to `Gemfile`
 
       source 'http://rubygems.org'
@@ -14,24 +26,6 @@ Adapted from http://blog.redistogo.com/2010/07/26/resque-with-redis-to-go/ and h
 
 * `bundle install`
 * `bundle lock`
-
-* create `RAILS_ROOT/config/resque.rb` and add: 
-
-      ENV["REDISTOGO_URL"] ||= "redis://username:password@host:1234/"
-
-      uri = URI.parse(ENV["REDISTOGO_URL"])
-      Resque.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
-
-* Create a job in `app/jobs/trogdor.rb`
-
-      class Trogdor
-        @queue = :terrorize
-  
-        def perform(target)
-          puts "Burninating the #{target}!"
-        end
-      end
-
 * Add a preinitializer file to work around Bundler issues: (From: http://stackoverflow.com/questions/2170697/bundler-isnt-loading-gems)
 
       begin
@@ -48,26 +42,16 @@ Adapted from http://blog.redistogo.com/2010/07/26/resque-with-redis-to-go/ and h
       # Auto-require all bundled libraries.
       Bundler.require
 
-* Create a controller that will respond to http requests and create our background job
-* `RAILS_ROOT/script/generate controller trogdor`
-* Set `RAILS_ROOT/config/routes.rb` to: 
+## Configure Resque
 
-      ActionController::Routing::Routes.draw do |map|
-        map.trogdor 'trogdor/burninate/:target', :controller => 'trogdor', :action => 'burninate'
-      end
+* create `RAILS_ROOT/config/resque.rb` and add: 
 
-* Uncomment this line from `environment.rb`
+      ENV["REDISTOGO_URL"] ||= "redis://username:password@host:1234/"
 
-`config.frameworks -= [ :active_record, :active_resource, :action_mailer ]`
+      uri = URI.parse(ENV["REDISTOGO_URL"])
+      Resque.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
 
-* `git rm RAILS_ROOT/config/database.yml`
-
-* Update TrogdorController: 
-
-      def burninate
-        Resque.enqueue(Trogdor, params[:target])
-        render :text => "Telling Trogdor to burninate #{params[:target]}."
-      end
+## Configure Resque-web for debugging
 
 * Create `RAILS_ROOT/config.ru`
 
@@ -93,16 +77,58 @@ Adapted from http://blog.redistogo.com/2010/07/26/resque-with-redis-to-go/ and h
       run Rack::URLMap.new \
         "/"       => ActionController::Dispatcher.new,
         "/resque" => Resque::Server.new
+
+## Add Resque Worker Class
+
+* Create a job in `app/jobs/trogdor.rb`
+
+      class Trogdor
+        @queue = :terrorize
+  
+        def perform(target)
+          puts "Burninating the #{target}!"
+        end
+      end
+
+## Create Controller which will initiate Resque worker
+
+* Create a controller that will respond to http requests and create our background job
+* `RAILS_ROOT/script/generate controller trogdor`
+* Create this method in the controller:
+
+      def burninate
+        Resque.enqueue(Trogdor, params[:target])
+        render :text => "Telling Trogdor to burninate #{params[:target]}."
+      end
+
+## Configure the route to our controller
+
+* Set `RAILS_ROOT/config/routes.rb` to: 
+
+      ActionController::Routing::Routes.draw do |map|
+        map.trogdor 'trogdor/burninate/:target', :controller => 'trogdor', :action => 'burninate'
+      end
+ 
+## Add project to Git
  
 * Add application to Git: `git init`
 * Add all files to Git: `git add .`
 * Commit to your Git repository: `git commit -m 'Initial commit'`
+
+## Add project to Heroku
+
 * Create the application with Heroku: `heroku create`
 * Add the Redis Heroku addon: `heroku addons:add redistogo`
 * Push your code to heroku: `git push heroku master`
+
+## Test the application
+
 * Open http://young-sunrise-78.heroku.com/resque (any username, password 'secret')
 * Open http://young-sunrise-78.heroku.com/trogdor/burninate/countryside
 * Start Resque worker: `heroku rake resque:work --app young-sunrise-78 --trace`
+
+## Observe for Maximum Win
+
 * Observe the output of the console command to heroku rake: 
 
       ~/heroku_redis_example(master) $ heroku rake resque:work --app young-sunrise-78 --trace
