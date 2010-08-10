@@ -1,5 +1,5 @@
 class Trogdor
-  @queue :countryside
+  @queue = :countryside
   
   def perform(target)
     puts "Burninating the #{target}!"

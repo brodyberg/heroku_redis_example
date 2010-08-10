@@ -1,0 +1,2 @@
+class TrogdorController < ApplicationController
+end
