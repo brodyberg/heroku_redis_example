@@ -53,6 +53,8 @@ The main difference is that this application runs on Rails 2.3x rather than Rail
       uri = URI.parse(ENV["REDISTOGO_URL"])
       Resque.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
 
+      Dir["#{Rails.root}/app/jobs/*.rb"].each { |file| require file }
+
 ## Configure Resque-web for debugging
 
 * Create `RAILS_ROOT/config.ru`
@@ -87,7 +89,7 @@ The main difference is that this application runs on Rails 2.3x rather than Rail
       class Trogdor
         @queue = :terrorize
   
-        def perform(target)
+        def self.perform(target)
           puts "Burninating the #{target}!"
         end
       end
