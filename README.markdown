@@ -116,6 +116,19 @@ Here we tell Rails how to handle a certain web request in order to invoke the `b
         map.trogdor 'trogdor/burninate/:target', :controller => 'trogdor', :action => 'burninate'
       end
  
+## Add Resque task to Rake
+
+* In `lib/tasks/resque.rake`:
+
+      require 'resque/tasks'
+
+      task "resque:setup" => :environment do
+        ENV['QUEUE'] = '*'
+      end
+
+      desc "Alias for resque:work (To run workers on Heroku)"
+      task "jobs:work" => "resque:work"
+ 
 ## Add project to Git
  
 * Add application to Git: `git init`
