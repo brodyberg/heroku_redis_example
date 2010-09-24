@@ -169,3 +169,31 @@ Kickoff the worker using [Heroku rake command](http://docs.heroku.com/rake) synt
       ** Execute resque:work
       Burninating the countryside!
       
+## Debugging
+
+Now, let's imagine you have `heroku rake` running but you'd like to extend or correct some aspect
+of your Job. In order to do this you need to clear out the Job environment on Heroku. 
+
+* `^C` (Control C) to escape your `heroku rake` task
+* Make your changes to your code
+* Commit and push to the heroku remote
+* Go to Resque-web to verify that 0 of 0 workers are working. What you are doing is effectively 
+waiting for the worker to timeout and die. 
+* When you have 0 of 0 workers working, `heroku rake resque:work` again. 
+
+This new rake call will then load up the new code you just deployed. Otherwise, it would be using
+old code and not reflect your changes/improvements. 
+      
+## Postscript
+
+Once you are happy with your application and your background jobs it's time to bite the bullet
+and start worker jobs in Heroku officially. Simply starting workers manually with `heroku rake` is
+insufficient as this will create workers only for as long as it takes for Heroku to timeout. 
+
+To create a long-running Heroku worker: 
+
+      ~/heroku_redis_example(master) $ heroku workers 1 --app young-sunrise-78
+        This action will cause your account to be billed at the end of the month
+        For more information, see http://docs.heroku.com/billing
+        Are you sure you want to do this? (y/n) y
+      young-sunrise-78 now running 1 worker
